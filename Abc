@@ -1,0 +1,520 @@
+-- ============================================================================
+-- Tuất VNG - 6 Tabs (Fixed Tab 6 TSB)
+-- ============================================================================
+
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local TweenService = game:GetService("TweenService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+-- Xóa GUI cũ nếu có
+pcall(function()
+    if CoreGui:FindFirstChild("TuatVNG20Tabs") then
+        CoreGui.TuatVNG20Tabs:Destroy()
+    end
+end)
+
+-- Tạo ScreenGui chính
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "TuatVNG20Tabs"
+ScreenGui.Parent = CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
+
+local function thongBao(noiDung)
+    pcall(function()
+        local notif = Instance.new("TextLabel")
+        notif.Parent = ScreenGui
+        notif.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        notif.Position = UDim2.new(0.5, -135, 0.05, 0)
+        notif.Size = UDim2.new(0, 270, 0, 35)
+        notif.Font = Enum.Font.SourceSansBold
+        notif.Text = noiDung
+        notif.TextColor3 = Color3.fromRGB(255, 255, 255)
+        notif.TextSize = 13
+        
+        local stroke = Instance.new("UIStroke", notif)
+        stroke.Color = Color3.fromRGB(100, 150, 255)
+        stroke.Thickness = 1.5
+
+        TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -135, 0.1, 0)}):Play()
+        task.delay(2.5, function()
+            if notif then notif:Destroy() end
+        end)
+    end)
+end
+
+-- ============================================================================
+-- 1. NÚT BẬT/TẮT MENU NỔI
+-- ============================================================================
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Name = "ToggleBtn"
+ToggleBtn.Parent = ScreenGui
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ToggleBtn.Position = UDim2.new(0, 10, 0.4, 0)
+ToggleBtn.Size = UDim2.new(0, 75, 0, 30)
+ToggleBtn.Font = Enum.Font.SourceSansBold
+ToggleBtn.Text = "OFF"
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+ToggleBtn.TextSize = 13
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true
+
+local ToggleStroke = Instance.new("UIStroke", ToggleBtn)
+ToggleStroke.Color = Color3.fromRGB(100, 100, 100)
+ToggleStroke.Thickness = 1.5
+
+-- ============================================================================
+-- 2. KHUNG MENU CHÍNH
+-- ============================================================================
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.Position = UDim2.new(0, 95, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 320, 0, 340)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Visible = true
+
+local MainStroke = Instance.new("UIStroke", MainFrame)
+MainStroke.Color = Color3.fromRGB(100, 100, 100)
+MainStroke.Thickness = 1.5
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+    if MainFrame.Visible then
+        ToggleBtn.Text = "OFF"
+        ToggleBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+    else
+        ToggleBtn.Text = "ON"
+        ToggleBtn.TextColor3 = Color3.fromRGB(100, 255, 100)
+    end
+end)
+
+-- Tiêu đề Menu
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Parent = MainFrame
+TitleLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TitleLabel.Size = UDim2.new(1, 0, 0, 30)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.Text = "TUẤT VNG - 6 TABS (VIP)"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 14
+
+-- Nút tắt nhanh X
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Parent = TitleLabel
+CloseBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+CloseBtn.Position = UDim2.new(1, -28, 0, 3)
+CloseBtn.Size = UDim2.new(0, 24, 0, 24)
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 12
+CloseBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    ToggleBtn.Text = "ON"
+    ToggleBtn.TextColor3 = Color3.fromRGB(100, 255, 100)
+end)
+
+-- ============================================================================
+-- 3. THANH TAB NGANG
+-- ============================================================================
+local TabBarScroll = Instance.new("ScrollingFrame")
+TabBarScroll.Name = "TabBarScroll"
+TabBarScroll.Parent = MainFrame
+TabBarScroll.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TabBarScroll.Position = UDim2.new(0, 0, 0, 30)
+TabBarScroll.Size = UDim2.new(1, 0, 0, 35)
+TabBarScroll.CanvasSize = UDim2.new(0, 6 * 75, 0, 0)
+TabBarScroll.ScrollBarThickness = 3
+
+local UIListLayout_Tabs = Instance.new("UIListLayout")
+UIListLayout_Tabs.Parent = TabBarScroll
+UIListLayout_Tabs.FillDirection = Enum.FillDirection.Horizontal
+UIListLayout_Tabs.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout_Tabs.Padding = UDim.new(0, 2)
+
+local tabNames = {"Main", "Shaders", "blox kid", "đường ray", "99 đêm", "tsb"}
+
+local ContentArea = Instance.new("Frame")
+ContentArea.Name = "ContentArea"
+ContentArea.Parent = MainFrame
+ContentArea.BackgroundTransparency = 1
+ContentArea.Position = UDim2.new(0, 0, 0, 65)
+ContentArea.Size = UDim2.new(1, 0, 1, -65)
+
+local tabButtons = {}
+local tabContainers = {}
+
+for i = 1, 6 do
+    local tBtn = Instance.new("TextButton")
+    tBtn.Name = "TabBtn_" .. i
+    tBtn.Parent = TabBarScroll
+    tBtn.BackgroundColor3 = (i == 1) and Color3.fromRGB(50, 20, 20) or Color3.fromRGB(30, 30, 30)
+    tBtn.Size = UDim2.new(0, 73, 1, 0)
+    tBtn.Font = Enum.Font.SourceSansBold
+    tBtn.Text = tabNames[i]
+    tBtn.TextColor3 = (i == 1) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180)
+    tBtn.TextSize = 10
+    table.insert(tabButtons, tBtn)
+
+    local tCont = Instance.new("ScrollingFrame")
+    tCont.Name = "TabContainer_" .. i
+    tCont.Parent = ContentArea
+    tCont.BackgroundTransparency = 1
+    tCont.Size = UDim2.new(1, 0, 1, 0)
+    tCont.CanvasSize = UDim2.new(0, 0, 0, 350)
+    tCont.ScrollBarThickness = 4
+    tCont.Visible = (i == 1)
+    table.insert(tabContainers, tCont)
+
+    tBtn.MouseButton1Click:Connect(function()
+        for idx = 1, 6 do
+            tabContainers[idx].Visible = (idx == i)
+            tabButtons[idx].BackgroundColor3 = (idx == i) and Color3.fromRGB(50, 20, 20) or Color3.fromRGB(30, 30, 30)
+            tabButtons[idx].TextColor3 = (idx == i) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180)
+        end
+    end)
+end
+
+-- ============================================================================
+-- 4. NỘI DUNG CHI TIẾT CÁC TAB
+-- ============================================================================
+
+-- TAB 1: MAIN
+local function taoNutTab1(tenNutHienThi, tenNutGoc, viTriY, callback)
+    local Button = Instance.new("TextButton")
+    Button.Name = tenNutGoc
+    Button.Parent = tabContainers[1]
+    Button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    Button.Position = UDim2.new(0.05, 0, 0, viTriY)
+    Button.Size = UDim2.new(0.9, 0, 0, 30)
+    Button.Font = Enum.Font.SourceSansBold
+    Button.Text = tenNutHienThi .. ": OFF"
+    Button.TextColor3 = Color3.fromRGB(255, 100, 100)
+    Button.TextSize = 12
+
+    local trangThai = false
+    Button.MouseButton1Click:Connect(function()
+        trangThai = not trangThai
+        if trangThai then
+            Button.Text = tenNutHienThi .. ": ON"
+            Button.TextColor3 = Color3.fromRGB(100, 255, 100)
+            Button.BackgroundColor3 = Color3.fromRGB(50, 25, 25)
+        else
+            Button.Text = tenNutHienThi .. ": OFF"
+            Button.TextColor3 = Color3.fromRGB(255, 100, 100)
+            Button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        end
+        callback(trangThai)
+    end)
+end
+
+taoNutTab1("Night vision", "NhinDem", 10, function(state)
+    if state then
+        Lighting.Brightness = 2; Lighting.ClockTime = 14; Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+    else
+        Lighting.Brightness = 1; Lighting.ClockTime = 12; Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+    end
+end)
+
+local speedActive = false
+taoNutTab1("Fast running & high jumping", "TocDoNhay", 45, function(state)
+    speedActive = state
+end)
+
+RunService.RenderStepped:Connect(function()
+    if speedActive then
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = 35
+            char.Humanoid.UseJumpPower = true
+            char.Humanoid.JumpPower = 100
+        end
+    end
+end)
+
+local noclipActive = false
+taoNutTab1("Noclip", "Noclip", 80, function(state)
+    noclipActive = state
+end)
+
+RunService.Stepped:Connect(function()
+    if noclipActive then
+        local char = LocalPlayer.Character
+        if char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
+            end
+        end
+    end
+end)
+
+local FlyTriggerBtn = Instance.new("TextButton")
+FlyTriggerBtn.Parent = tabContainers[1]
+FlyTriggerBtn.BackgroundColor3 = Color3.fromRGB(40, 20, 50)
+FlyTriggerBtn.Position = UDim2.new(0.05, 0, 0, 115)
+FlyTriggerBtn.Size = UDim2.new(0.9, 0, 0, 30)
+FlyTriggerBtn.Font = Enum.Font.SourceSansBold
+FlyTriggerBtn.Text = "Kích hoạt fly"
+FlyTriggerBtn.TextColor3 = Color3.fromRGB(255, 150, 255)
+FlyTriggerBtn.TextSize = 12
+
+FlyTriggerBtn.MouseButton1Click:Connect(function()
+    thongBao("Đang tải Fly...")
+    pcall(function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fly-v3-mxrtnttzflw7-82704"))()
+    end)
+end)
+
+local rideActive = false
+local currentTarget = nil
+taoNutTab1("Dí pi tiên", "BiTien", 150, function(state)
+    rideActive = state
+    if not state then currentTarget = nil end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if rideActive then
+        local char = LocalPlayer.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+        local rootPart = char.HumanoidRootPart
+
+        if not currentTarget or not currentTarget.Character or not currentTarget.Character:FindFirstChild("HumanoidRootPart") then
+            currentTarget = nil
+            local minDst = math.huge
+            for _, p in ipairs(Players:GetPlayers()) do
+                if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                    local hum = p.Character:FindFirstChild("Humanoid")
+                    if hum and hum.Health > 0 then
+                        local dst = (rootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                        if dst < minDst then minDst = dst; currentTarget = p end
+                    end
+                end
+            end
+        end
+
+        if currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild("HumanoidRootPart") then
+            local targetHum = currentTarget.Character:FindFirstChild("Humanoid")
+            if targetHum and targetHum.Health > 0 then
+                rootPart.CFrame = currentTarget.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+                rootPart.Velocity = Vector3.new(0, 0, 0)
+            else
+                currentTarget = nil
+            end
+        end
+    end
+end)
+
+local espActive = false
+local espTable = {}
+taoNutTab1("ESP Người Chơi", "ESP", 185, function(state)
+    espActive = state
+    if not state then
+        for _, h in pairs(espTable) do if h then h:Destroy() end end
+        espTable = {}
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if espActive then
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character and not p.Character:FindFirstChild("AxiomESP") then
+                local hl = Instance.new("Highlight")
+                hl.Name = "AxiomESP"
+                hl.Adornee = p.Character
+                hl.FillColor = Color3.fromRGB(255, 0, 0)
+                hl.Parent = p.Character
+                table.insert(espTable, hl)
+            end
+        end
+    end
+end)
+
+local aimbotActive = false
+taoNutTab1("Aimbot", "Aimbot", 220, function(state)
+    aimbotActive = state
+end)
+
+RunService.RenderStepped:Connect(function()
+    if aimbotActive then
+        local mucTieu, khoangCachMin = nil, math.huge
+        local mouse = LocalPlayer:GetMouse()
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("Head") then
+                local hum = p.Character:FindFirstChild("Humanoid")
+                if hum and hum.Health > 0 then
+                    local pos, onScreen = Camera:WorldToViewportPoint(p.Character.Head.Position)
+                    if onScreen then
+                        local mag = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(pos.X, pos.Y)).Magnitude
+                        if mag < khoangCachMin then khoangCachMin = mag; mucTieu = p.Character.Head end
+                    end
+                end
+            end
+        end
+        if mucTieu then Camera.CFrame = CFrame.new(Camera.CFrame.Position, mucTieu.Position) end
+    end
+end)
+
+-- TAB 2: SHADERS
+local cc = Instance.new("ColorCorrectionEffect", Lighting); cc.Name = "TuatShader_CC"; cc.Enabled = false
+local bloom = Instance.new("BloomEffect", Lighting); bloom.Name = "TuatShader_Bloom"; bloom.Enabled = false
+local sunRays = Instance.new("SunRaysEffect", Lighting); sunRays.Name = "TuatShader_SunRays"; sunRays.Enabled = false
+
+local function taoNutShaderTab(tenHienThi, viTriY, applyFunc)
+    local sBtn = Instance.new("TextButton")
+    sBtn.Parent = tabContainers[2]
+    sBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    sBtn.Position = UDim2.new(0.05, 0, 0, viTriY)
+    sBtn.Size = UDim2.new(0.9, 0, 0, 32)
+    sBtn.Font = Enum.Font.SourceSansBold
+    sBtn.Text = tenHienThi .. ": OFF"
+    sBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+    sBtn.TextSize = 11
+
+    local trangThai = false
+    sBtn.MouseButton1Click:Connect(function()
+        trangThai = not trangThai
+        sBtn.Text = tenHienThi .. (trangThai and ": ON" or ": OFF")
+        sBtn.TextColor3 = trangThai and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+        sBtn.BackgroundColor3 = trangThai and Color3.fromRGB(20, 50, 20) or Color3.fromRGB(30, 30, 30)
+        applyFunc(trangThai)
+    end)
+end
+
+taoNutShaderTab("Điện ảnh chân thực", 15, function(state)
+    cc.Enabled = state; bloom.Enabled = state
+    if state then cc.Brightness = 0.04; cc.Contrast = 0.28; cc.Saturation = 0.45; bloom.Intensity = 0.5; bloom.Size = 24 end
+end)
+
+taoNutShaderTab("Anime sực rỡ", 55, function(state)
+    cc.Enabled = state; sunRays.Enabled = state
+    if state then cc.Brightness = 0.08; cc.Contrast = 0.2; cc.Saturation = 0.75; sunRays.Intensity = 0.3 end
+end)
+
+taoNutShaderTab("Cyberpunk Neon", 95, function(state)
+    cc.Enabled = state; bloom.Enabled = state
+    if state then cc.Brightness = -0.05; cc.Contrast = 0.45; cc.Saturation = 0.6; cc.TintColor = Color3.fromRGB(200, 150, 255); bloom.Intensity = 0.8 else cc.TintColor = Color3.fromRGB(255, 255, 255) end
+end)
+
+taoNutShaderTab("Hoàng hôn chill", 135, function(state)
+    cc.Enabled = state; sunRays.Enabled = state
+    if state then cc.Brightness = 0.02; cc.Contrast = 0.3; cc.Saturation = 0.5; cc.TintColor = Color3.fromRGB(255, 200, 150); sunRays.Intensity = 0.4 else cc.TintColor = Color3.fromRGB(255, 255, 255) end
+end)
+
+taoNutShaderTab("Đen trắng điện ảnh", 175, function(state)
+    cc.Enabled = state
+    if state then cc.Brightness = 0; cc.Contrast = 0.5; cc.Saturation = -1 end
+end)
+
+-- TAB 3: BLOX KID
+local function taoNutTab3(text, link, posy, textColor)
+    local btn = Instance.new("TextButton")
+    btn.Parent = tabContainers[3]
+    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    btn.Position = UDim2.new(0.05, 0, 0, posy)
+    btn.Size = UDim2.new(0.9, 0, 0, 35)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.Text = text
+    btn.TextColor3 = textColor
+    btn.TextSize = 12
+
+    btn.MouseButton1Click:Connect(function()
+        thongBao("Đang tải " .. text .. "...")
+        pcall(function()
+            loadstring(game:HttpGet(link))()
+        end)
+    end)
+end
+
+taoNutTab3("redz fake", "https://raw.githubusercontent.com/fakekuri/idk-hub/refs/heads/main/RedzHub.luau", 15, Color3.fromRGB(0, 255, 200))
+taoNutTab3("quatum", "https://raw.githubusercontent.com/flazhy/QuantumOnyx/refs/heads/main/QuantumOnyx.lua", 60, Color3.fromRGB(255, 165, 0))
+taoNutTab3("dragon (fram ngon mà hơi lag)", "https://raw.githubusercontent.com/Tdk-Dragon/DragonX.lua/refs/heads/main/DragonX.lua.txt", 105, Color3.fromRGB(200, 100, 255))
+
+-- TAB 4: ĐƯỜNG RAY
+local FramBoundBtn = Instance.new("TextButton")
+FramBoundBtn.Parent = tabContainers[4]
+FramBoundBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+FramBoundBtn.Position = UDim2.new(0.05, 0, 0, 15)
+FramBoundBtn.Size = UDim2.new(0.9, 0, 0, 35)
+FramBoundBtn.Font = Enum.Font.SourceSansBold
+FramBoundBtn.Text = "fram bound"
+FramBoundBtn.TextColor3 = Color3.fromRGB(255, 150, 220)
+FramBoundBtn.TextSize = 13
+
+FramBoundBtn.MouseButton1Click:Connect(function()
+    thongBao("Đang tải Fram Bound...")
+    pcall(function()
+        loadstring(game:HttpGet("https://foxname.top/autofarm"))()
+    end)
+end)
+
+-- TAB 5: 99 ĐÊM
+local Dem99Btn = Instance.new("TextButton")
+Dem99Btn.Parent = tabContainers[5]
+Dem99Btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Dem99Btn.Position = UDim2.new(0.05, 0, 0, 15)
+Dem99Btn.Size = UDim2.new(0.9, 0, 0, 35)
+Dem99Btn.Font = Enum.Font.SourceSansBold
+Dem99Btn.Text = "99 đêm bỏ lọ"
+Dem99Btn.TextColor3 = Color3.fromRGB(255, 220, 100)
+Dem99Btn.TextSize = 12
+
+Dem99Btn.MouseButton1Click:Connect(function()
+    thongBao("Đang tải 99 đêm bỏ lọ...")
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/napun87/Anime/refs/heads/main/SynvexitaHub.lua"))()
+    end)
+end)
+
+local ChuaTestBtn = Instance.new("TextButton")
+ChuaTestBtn.Parent = tabContainers[5]
+ChuaTestBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ChuaTestBtn.Position = UDim2.new(0.05, 0, 0, 60)
+ChuaTestBtn.Size = UDim2.new(0.9, 0, 0, 35)
+ChuaTestBtn.Font = Enum.Font.SourceSansBold
+ChuaTestBtn.Text = "chưa test nên ko biết"
+ChuaTestBtn.TextColor3 = Color3.fromRGB(150, 220, 255)
+ChuaTestBtn.TextSize = 11
+
+ChuaTestBtn.MouseButton1Click:Connect(function()
+    thongBao("Đang tải script chưa test...")
+    pcall(function()
+        loadstring(game:HttpGet("https://robloxscriptbest.com/script/loader.php?script=ringta"))()
+    end)
+end)
+
+-- TAB 6: TSB
+local TitleMuc1 = Instance.new("TextLabel")
+TitleMuc1.Parent = tabContainers[6]
+TitleMuc1.BackgroundTransparency = 1
+TitleMuc1.Position = UDim2.new(0.05, 0, 0, 10)
+TitleMuc1.Size = UDim2.new(0.9, 0, 0, 20)
+TitleMuc1.Font = Enum.Font.SourceSansBold
+TitleMuc1.Text = "Mục 1"
+TitleMuc1.TextColor3 = Color3.fromRGB(200, 200, 200)
+TitleMuc1.TextSize = 12
+TitleMuc1.TextXAlignment = Enum.TextXAlignment.Left
+
+local AimBtn = Instance.new("TextButton")
+AimBtn.Parent = tabContainers[6]
+AimBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+AimBtn.Position = UDim2.new(0.05, 0, 0, 35)
+AimBtn.Size = UDim2.new(0.9, 0, 0, 35)
+AimBtn.Font = Enum.Font.SourceSansBold
+AimBtn.Text = "aim"
+AimBtn.TextColor3 = Color3.fromRGB(0, 255, 100)
+AimBtn.TextSize = 12
+
+AimBtn.MouseButton1Click:Connect(function()
+    thongBao("Đang kích hoạt script Aim...")
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/yqantg-pixel/Find/refs/heads/main/Protected_3334988263341522.lua.txt"))()
+    end)
+end)
